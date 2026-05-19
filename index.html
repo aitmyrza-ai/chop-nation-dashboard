@@ -18,7 +18,7 @@
     /* ── Login Screen ─────────────────────────────────────────────────────── */
     #login-screen {
       min-height: 100vh;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
     }
@@ -452,6 +452,8 @@
   db.auth.getSession().then(({ data }) => {
     if (data.session) {
       showDashboard(data.session.user);
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
     }
   });
 
