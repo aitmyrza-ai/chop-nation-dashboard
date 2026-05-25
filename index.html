@@ -562,9 +562,10 @@
   });
 
   // ── Dashboard Init ─────────────────────────────────────────────────────────
-  function initDashboard() {
+  async function initDashboard() {
     document.getElementById('e-date').valueAsDate = new Date();
     document.getElementById('t-date').valueAsDate = new Date();
+    await loadDropdowns();
     loadAll();
     loadNotes();
 
@@ -573,6 +574,30 @@
       clearTimeout(notesSaveTimer);
       notesSaveTimer = setTimeout(saveNotes, 1000);
     });
+  }
+
+  async function loadDropdowns() {
+    const { data } = await db.from('dropdown_options').select('*').order('id');
+    if (!data) return;
+
+    const statuses   = data.filter(r => r.type === 'event_status');
+    const categories = data.filter(r => r.type === 'truck_category');
+
+    const statusLabels = {
+      'pending': 'Pending',
+      'deposit-paid': 'Deposit Paid',
+      'paid-full': 'Paid in Full',
+      'cancelled': 'Cancelled',
+      'refunded': 'Refunded'
+    };
+
+    document.getElementById('e-status').innerHTML = statuses.map(s =>
+      `<option value="${s.value}">${statusLabels[s.value] || s.value}</option>`
+    ).join('');
+
+    document.getElementById('t-category').innerHTML = categories.map(c =>
+      `<option value="${c.value}">${c.value}</option>`
+    ).join('');
   }
 
   async function loadNotes() {
