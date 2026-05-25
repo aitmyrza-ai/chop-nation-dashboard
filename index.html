@@ -320,7 +320,7 @@
 <main>
 
   <!-- Summary Cards -->
-  <div class="cards">
+  <div class="cards" id="section-cards">
     <div class="card revenue">
       <div class="label">Event Revenue</div>
       <div class="amount" id="c-revenue">$0</div>
@@ -344,7 +344,7 @@
   </div>
 
   <!-- Catering Events -->
-  <div class="box">
+  <div class="box" id="section-events">
     <div class="box-header">
       <h2>Catering Events</h2>
       <span class="sub-label">Track each event's P&L</span>
@@ -483,10 +483,19 @@
     document.getElementById('login-password').value = '';
   }
 
-  function showDashboard(user) {
+  async function showDashboard(user) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').style.display    = 'block';
     document.getElementById('user-email').textContent     = user.email;
+
+    const { data: roleData } = await db.from('user_roles').select('role').eq('user_id', user.id).single();
+    const role = roleData ? roleData.role : 'staff';
+
+    if (role === 'staff') {
+      document.getElementById('section-cards').style.display  = 'none';
+      document.getElementById('section-events').style.display = 'none';
+    }
+
     initDashboard();
   }
 
